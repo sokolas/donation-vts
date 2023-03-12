@@ -1,0 +1,15 @@
+{
+	"logVtsMessages": false,
+	"logDaMessages": false,
+	"vtsAddr": "ws://127.0.0.1:2545",
+	"vtsToken": "",
+	"customParam": "DonationCustomParam",
+	"paramDescription": "",
+	"stayTime": 20,
+	"decayTime": 5,
+	"multiplier": 1,
+	"addParam": true,
+	"daToken": "",
+	"daPort": 9696,
+	"daAppId": "10695"
+}
