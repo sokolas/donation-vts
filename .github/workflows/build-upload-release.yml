@@ -13,7 +13,7 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     env:
-      GOOS: Windows
+      GOOS: windows
       GOARCH: amd64
     steps:
       - name: Checkout code
