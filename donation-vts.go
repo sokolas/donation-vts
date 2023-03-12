@@ -19,7 +19,9 @@ func main() {
 	internal.InfoLog.Printf("Application config loaded")
 	internal.DumpConfig()
 
-	internal.InfoLog.Println("\n*** Press Ctrl-C to exit ***\n")
+	internal.InfoLog.Println("")
+	internal.InfoLog.Println("*** Press Ctrl-C to exit ***")
+	internal.InfoLog.Println("")
 
 	vts.UpdateConfig()
 	vtsDone := make(chan int)

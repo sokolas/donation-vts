@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"sokolas/donation-vts/internal"
 	"sokolas/donation-vts/vts"
 	"time"
@@ -126,7 +127,12 @@ func Prompt() {
 	u, _ := url.Parse("https://www.donationalerts.com/oauth/authorize")
 	u.RawQuery = params.Encode()
 
-	internal.WarnLog.Printf("*** open %v to authorize on donationalerts", u)
+	os.WriteFile("Authorize Donationalerts.url", []byte(fmt.Sprintf("[InternetShortcut]\nURL=%v", u)), os.ModeAppend)
+
+	internal.WarnLog.Println("")
+	internal.WarnLog.Println("*** open 'Authorize Donationalerts' shortcut to connect the app")
+	internal.WarnLog.Println("")
+	internal.WarnLog.Printf("if it doesn't work, copy and paste this URL into your browser: %v", u)
 }
 
 func StartServer() {

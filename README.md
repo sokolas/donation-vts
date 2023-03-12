@@ -18,7 +18,7 @@ Start the app
 
 Set up a mapping for plugin custom parameter to your model parameter in vtube studio: https://github.com/DenchiSoft/VTubeStudio/wiki/Plugins#what-are-custom-parameters
 
-Authorize the app in donationalerts by following the link in app logs (https://www.donationalerts.com/oauth/authorize?client_id=10695&redirect_uri=http%3A%2F%2Flocalhost%3A9696%2F&response_type=token&scope=oauth-donation-subscribe+oauth-user-show with default settings)
+Authorize the app in donationalerts by opening the `Authorize Donationalerts` shortcut created in the app folder or by copy-pasting the link from the app logs into your browser (https://www.donationalerts.com/oauth/authorize?client_id=10695&redirect_uri=http%3A%2F%2Flocalhost%3A9696%2F&response_type=token&scope=oauth-donation-subscribe+oauth-user-show with default settings).
 
 # Example
 Let's assume you have `stayTime: 10`, `decayTime: 5`, `addParam: true` and `multiplier: 10` and your parameter controls your head size. By default it's set to 0 so your head is of its normal size. Then you receive a donation of 5 USD. Assuming your current currency is EUR and the conversion rate is 0.9 EUR per USD, you receive `5*0.9 = 4.5` EUR. This value is multiplied by `multiplier` (10) and the head size param is set to 45. After 10 seconds of staying at 45, it starts to shrink back to 0 over the duration of 5 seconds.
