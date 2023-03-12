@@ -310,7 +310,7 @@ func tryReadDonationAlert(r map[string]any) {
 				internal.InfoLog.Printf("Received donation from %v/%v for %v %v (%v converted)",
 					name, username, amount, currency, convertedAmount)
 				if convertedAmount != 0.0 {
-					vts.Control <- vts.ControlMsg{Msg: vts.SetParam, Value: multiplier * convertedAmount}
+					vts.ParamControl <- vts.ControlMsg{Msg: vts.SetParam, Value: multiplier * convertedAmount}
 				}
 			}
 		}

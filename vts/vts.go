@@ -39,6 +39,7 @@ var decayAt time.Time = time.Now()
 var reconnectAt time.Time = time.Now()
 
 var Control chan ControlMsg = make(chan ControlMsg, 10)
+var ParamControl chan ControlMsg = make(chan ControlMsg, 10)
 
 func UpdateConfig() {
 	addr = internal.Config.VtsAddr
@@ -54,9 +55,6 @@ func UpdateConfig() {
 
 func setState(s string) {
 	internal.InfoLog.Printf("state: %v -> %v", state, s)
-	if s == "connecting" {
-		internal.InfoLog.Println("reconencting...")
-	}
 	state = s
 }
 
@@ -71,6 +69,7 @@ func doConnect() {
 	if err != nil {
 		internal.ErrLog.Println(err)
 		reconnectAt = time.Now().Add(15 * time.Second)
+		internal.InfoLog.Println("reconnecting in 15 seconds...")
 		return
 	}
 	conn = c
@@ -192,8 +191,33 @@ func doClose() {
 	}
 }
 
+func readParam() {
+	for {
+		c := <-ParamControl
+		if c.Msg == SetParam {
+			internal.InfoLog.Printf("Setting param to %v", c.Value)
+			if addParam {
+				paramValue = paramValue + c.Value
+			} else {
+				paramValue = c.Value
+			}
+			if paramValue > 100 {
+				paramValue = 100
+			}
+			decayAt = time.Now().Add(time.Duration(stayTime) * time.Second)
+			if decayTime <= 1 {
+				delta = paramValue
+			} else {
+				delta = paramValue / float64(decayTime)
+			}
+		}
+	}
+}
+
 func Run(done chan<- int) {
 	defer func() { done <- 1 }()
+	go readParam()
+
 	if stayTime >= 0 {
 		decayTicker = time.NewTicker(time.Second)
 		go decay()
@@ -207,22 +231,7 @@ func Run(done chan<- int) {
 		case c := <-Control:
 			// fmt.Printf("received control message %#v\n", c)
 			switch c.Msg {
-			case SetParam:
-				// fmt.Printf("Setting param to %v\n", c.Value)
-				if addParam {
-					paramValue = paramValue + c.Value
-				} else {
-					paramValue = c.Value
-				}
-				if paramValue > 100 {
-					paramValue = 100
-				}
-				decayAt = time.Now().Add(time.Duration(stayTime) * time.Second)
-				if decayTime <= 1 {
-					delta = paramValue
-				} else {
-					delta = paramValue / float64(decayTime)
-				}
+			// case SetParam:
 			case Reconnect:
 				conn.Close()
 				reconnectAt = time.Now().Add(15 * time.Second)
