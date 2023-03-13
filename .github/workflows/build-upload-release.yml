@@ -28,7 +28,7 @@ jobs:
         run: go build -v .
         
       - name: Compress
-        run: zip donation-vts.zip donation-vts.exe config.json README.md "Authorize Donationalerts.url"
+        run: zip donation-vts.zip donation-vts.exe config.json README.md LICENSE "Authorize Donationalerts.url"
           
       - name: Create Release
         id: create_release
