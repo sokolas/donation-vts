@@ -1,28 +1,40 @@
-# Usage
+# Скачать
+Архив с последней версией: https://github.com/sokolas/donation-vts/releases/download/v1.0.4/donation-vts.zip
 
-**Инструкция на русском (manual in russian)**: https://github.com/sokolas/donation-vts/blob/master/README-RU.md
+# Использование
 
-Edit `config.json` and set the following values:
-*	`"logVtsMessages"`: `true`/`false` - log incoming messages from vtube studio (enable this to troubleshoot, otherwise you don't need it)
-*	`"vtsAddr"`: `"ws://localhost:8001"` - your vtube studio address; see https://github.com/DenchiSoft/VTubeStudio/wiki/Plugins#how-to-use-plugins
-*	`"vtsToken"`: `""` - leave it empty, the plugin sets it automatically. If you have authentication errors from vtube studio, set this to empty value manually (`""`)
-*	`"customParam"`: `"DonationPluginParam"` - custom parameter name. It has to be unique and you need it to bind it to your model parameter later
-*	`"paramDescription"`: `"donation alerts custom param"` - parameter description that is seen in vtube studio
-*	`"stayTime"`: `20` (integer number) - each time you receive a donation, the parameter will be set for this duration in seconds before decaying to zero. If the value is negative the parameter will never decay.
-*	`"decayTime"`: `5` (integer number) - the time for parameter value to decay to 0 (in seconds) after it's stay period is over. It can't be less than 1 second; if it's 0 or less it will be set to 1 instead
-*	`"addParam"`: `true`/`false` - if set to `true`, donations will add their value to the current param value; if set to `false`, the value will be overwritten each time
-*    `"multiplier"`: `1` (fractional number) - when you receive a donation, its value in your default currency will be multiplied by this `multiplier` and added/set to the custom parameter, trimming it to the range from 0 to 100
-*	`"daToken"`: `""` - donationalerts token; leave it empty, it is set automatically. If you encounter donationalerts authentication errors, set this manually to `""`
-*   `"daPort"`": `9696` - local port for donationalert auth; it's bound to the app id so don't change it unless you have your own app registered there
-*   `"daAppId"`: `"10695"` - app id for donationalert auth. Don't change it unless you have your own app registered there
+**English manual**: https://github.com/sokolas/donation-vts/blob/master/README-EN.md
 
+В первую очередь надо включить плагины в vtube studio: [см. тут](https://github.com/DenchiSoft/VTubeStudio/wiki/Plugins#how-to-use-plugins)
+У плагина нет установщика, нужно скачать архив и распаковать, для запуска использовать `donations-vts.exe`. Если все сделано правильно, то посла запуска появится черное окно с логами программы, а в vtube studio через несколько секунд появится окно с подтверждением плагина; это нужно один раз, разрешите его.
+После того, как плагин добавлен, в логе появится строка `state: waiting_set_param -> param_set`, а в vtube studio появится новый параметр (по умолчанию называется DonationPluginParam).
+Дальше нужно настроить соответствие параметра плагина какому-то параметру модели, который должен меняться от донатов. Подробно это описано [вот тут (англ)](https://github.com/DenchiSoft/VTubeStudio/wiki/Plugins#what-are-custom-parameters)
 
-Start the app
+Дальше необходимо зарегистрировать этот плагин в donationalerts. **регистрация возможна только при запущенном приложении**. Для этого нужно открыть ярлык `Authorize Donationalerts`, который лежит в папке рядом с программой, или [по этой ссылке](https://www.donationalerts.com/oauth/authorize?client_id=10695&redirect_uri=http%3A%2F%2Flocalhost%3A9696%2F&response_type=token&scope=oauth-donation-subscribe+oauth-user-show) и разрешить приложению доступ. Если все прошло успешно, появится надпись "Success!" в браузере, его можно закрыть. Это нужно сделать один раз при первом запуске, и обычно повторной регистрации приложения не требуется.
 
-Set up a mapping for plugin custom parameter to your model parameter in vtube studio: https://github.com/DenchiSoft/VTubeStudio/wiki/Plugins#what-are-custom-parameters
+Для проверки подключения донатов перейдите [по ссылке](https://www.donationalerts.com/dashboard/activity-feed/donations) и нажмите кнопку "добавить донат"/"add donation"; введите сумму и поставьте галочку "показывать в виджете"/"alert donation in widget"; подтвердите. Если все правильно, в логе программы появится сообщение " Received donation from Donations/...".
 
-Authorize the app in donationalerts by opening the `Authorize Donationalerts` shortcut created in the app folder or by copy-pasting the link from the app logs into your browser (https://www.donationalerts.com/oauth/authorize?client_id=10695&redirect_uri=http%3A%2F%2Flocalhost%3A9696%2F&response_type=token&scope=oauth-donation-subscribe+oauth-user-show with default settings).
+Программа настраивается через редактирование настроек в `config.json` в блокноте. При изменении настроек нужно закрыть программу и запустить ее снова. Vtube studio перезапускать не надо.
 
-# Example
-Let's assume you have `stayTime: 10`, `decayTime: 5`, `addParam: true` and `multiplier: 10` and your parameter controls your head size. By default it's set to 0 so your head is of its normal size. Then you receive a donation of 5 USD. Assuming your current currency is EUR and the conversion rate is 0.9 EUR per USD, you receive `5*0.9 = 4.5` EUR. This value is multiplied by `multiplier` (10) and the head size param is set to 45. After 10 seconds of staying at 45, it starts to shrink back to 0 over the duration of 5 seconds.
-If you receive another donation during these 15 seconds from the first one, its value will be calculated and added (as configured by `addParam: true`) to the current value and the decay timer will be set back to 10 seconds.
+**Настройки параметра для vtube studio**
+*	`"customParam"`: `"DonationPluginParam"` - название параметра, который будет меняться от донатов. К нему будет привязан параметр модели.
+*	`"paramDescription"`: `"donation alerts custom param"` - описание параметра, ни на что не влияет, кроме текста в vtube studio. Если у вас много плагинов, может быть полезно.
+*	`"stayTime"`: `20` (целое число) - каждый раз, когда приходит донат и параметр устанавливается в новое значение, он держится **заданное время**, а потом начинает уменьшаться обратно до 0. Чтобы он не уменьшался автоматически, поставьте значение `-1`
+*	`"decayTime"`: `5` (целое число) - за это время (в мекундах) параметр уменьшится обратно до 0. Подробное описание с примером см. ниже
+*	`"addParam"`: `true`/`false` - если `true`, то донаты будут **добавлять** значение к параметру, если `false`, то будут **заменять**
+* `"multiplier"`: `1` (целое/дробное число) - когда приходит донат, его сумма в стандартной валюте пользователя будет умножаться на это число, чтобы добавить/установить параметр. См. пример ниже
+
+Остальные настройки (**меняйте, только если что-то не работает или вы знаете, что именно вам надо**)
+*	`"logVtsMessages"`: `true`/`false` - писать все сообщения, которые приходят от vtube studio. Это может быть нужно, если что-то не работает
+*	`"logDaMessages"`: `true`/`false` - писать все сообщения, которые приходят от donationalerts. Это может быть нужно, если что-то не работает
+*	`"vtsAddr"`: `"ws://localhost:8001"` - адрес vtube studio. Если вы не меняли порт в настройках плагинов, то оставьте, как есть. [Подробнее про плагины (англ)](https://github.com/DenchiSoft/VTubeStudio/wiki/Plugins#how-to-use-plugins)
+*	`"vtsToken"`: `""` - токен доступа к vtube studio. Программа получает его и сохраняет автомматически при разрешении плагина в студии. Если возникли какие-то проблемы и плагин не работает, попробуйте заменить этот токен на пустую строку (`""`) и перезапустить программу.
+*	`"daToken"`: `""` - токен доступа к donationalerts. **никому не сообщайте его!** Программа получает его и сохраняет автомматически при разрешении доступа к donationalerts. Если с получением донатов какие-то проблемы, замените его на пустую строку `""` и перезапустите программу. При этом нужно снова перейти по ссылке (ярлык `Authorize Donationalerts`) и авторизовать приложение заново.
+*   `"daPort"`": `9696` - порт для регистрации в donationalerts. **он указан в настройках donationalerts и с другим портом регистрация работать не будет**. Если у вас пок акой-то причине этот порт занят и регистрация не работает, то придется [создать свое приложение](https://www.donationalerts.com/application/clients) на donationalerts и использовать его порт и AppID
+*   `"daAppId"`: `"10695"` - AppID для регистрации на donationalert. **меняйте его, только если вы зарегистрировали там свое собственное приложение и поменяли порт/redirect и знаете, что делаете**
+
+# Пример
+Допустим, вы не меняли конфиг, и по умолчанию стоят значения: `stayTime: 20`, `decayTime: 5`, `addParam: true` и `multiplier: 1` и параметр привязан, допустим, к размеру головы. По умолчанию значение параметра 0 и голова модели нормального размера.
+* приходит донат в 1 USD. Допустим, валюта аккаунта - рубли и курс, например, 80р за USD. Вы получите `1*80=80`р. Это число умножается на `multiplier` (1), получается 80, и параметр устанавливается в 80.
+* Через 20 секунд (stayTime) параметр начинает уменьшаться. Он уменьшится обратно до 0 за 5 сек (decayTime).
+* Если за это время (25 сек) придет второй донат, например, еще на 0.5 USD, он снова пересчитается в число для параметра(уже в 40) и это число **добавится** к тому, что уже установлено (потому что `addParam: true`) и будет держаться еще 20 сек, пока не начнет "сдуваться". Если параметр будет больше 100, то вместо этого он установится ровно в 100.
