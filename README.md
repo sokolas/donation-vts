@@ -1,4 +1,7 @@
 # Usage
+
+**Инструкция на русском (manual in russian)**: https://github.com/sokolas/donation-vts/blob/master/README-RU.md
+
 Edit `config.json` and set the following values:
 *	`"logVtsMessages"`: `true`/`false` - log incoming messages from vtube studio (enable this to troubleshoot, otherwise you don't need it)
 *	`"vtsAddr"`: `"ws://localhost:8001"` - your vtube studio address; see https://github.com/DenchiSoft/VTubeStudio/wiki/Plugins#how-to-use-plugins
