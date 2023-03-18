@@ -1,0 +1,244 @@
+/* dropdowns */
+* {
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+}
+
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+
+.dropdown-container {
+	max-width: 800px;
+	border: 1px solid #ccc;
+	color: #888;
+	overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.dropdown-container header {
+	cursor: pointer;
+	font-size: 0.6rem;
+	padding: 1rem;
+    background-color: #595959;
+	color: white;
+	transition: background-color 350ms ease-in-out;
+}
+
+.dropdown-container h1 {
+	float: left;
+	text-transform: uppercase;
+}
+
+.dropdown-container .expand {
+	float: right;
+	transform: rotate(45deg);
+	font-size: 1.8em;
+	transition: transform 350ms ease-in-out;
+}
+
+.dropdown-container.open .expand{
+	transform: rotate(0);
+}
+
+.dropdown-container article {
+	max-height: 0px;
+	overflow: hidden;
+	line-height: 1.6; 
+	transition: max-height 350ms ease-in-out;
+}
+
+/* padding can't be on article element because it won't collapse properly, add wrapper around contents */
+.dropdown-container .article-inner {
+	/* padding: 1rem; */
+}
+
+/* other */
+
+html {
+    height: 100vh;
+    min-width: 600px;
+}
+
+.container {
+    /* width: 800px; */
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin: auto;
+}
+
+.box {
+    display: flex;
+    align-items: top;
+    justify-content: center;
+}
+
+.logo {
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+    max-width: 500px;
+    padding: 1.5rem 0;
+    align-items: center;
+}
+
+.link {
+    text-transform: uppercase;
+    float: right;
+    font-weight: normal;
+}
+
+.link a {
+    color: #595959;
+}
+
+form {
+    background-color: #595959;
+    padding: 15px;
+    border-radius: 5px;
+    /* display: flex; */
+}
+
+label {
+    color: white;
+}
+
+fieldset {
+    background-color: #595959;
+    padding: 15px;
+    /* border-radius: 5px; */
+    border: none;
+    display: flex;
+    flex-direction: column;
+}
+
+fieldset span {
+    height: 30px;
+    outline: 0;
+    border: none;
+    font-size: 1rem;
+    color: #595959;
+    flex-grow: 1;
+    margin-bottom: 10px;
+}
+
+input[type="text"], input[type="password"] {
+    padding: 5px;
+    height: 30px;
+    outline: 0;
+    border: none;
+    font-size: 1rem;
+    color: #595959;
+    flex-grow: 1;
+    margin-bottom: 10px;
+}
+
+input[type="checkbox"] {
+    /* height: 30px; */
+    margin-right: 0.5rem;
+}
+
+button {
+    font-size: 1.5rem;
+    color: #595959;
+    padding: 5px;
+}
+
+button:hover {
+    color: lightcoral;
+}
+
+.card {
+    width: 300px;
+    margin: 15px;
+}
+
+.state {
+    background-color: #FFFFFF;
+    border-color: #595959;
+    border-style: solid;
+    border-radius: 5px;
+    /* margin-top: 20px; */
+    padding: 10px 25px;
+    /* height: 100%; */
+    /* overflow-y: auto; */
+    width: 300px;
+    margin: 15px;
+}
+
+ul.status {
+    padding-left: 0px;
+    list-style: none;
+    color: #595959;
+}
+
+.status li {
+    display: block;
+    align-items: center;
+    border-bottom: 1px solid lightgrey;
+    padding: 15px 0;
+    font-size: 1rem;
+}
+
+.status li:last-child {
+    border-bottom: none;
+}
+
+i {
+    pointer-events: none;
+}
+
+li.good {
+    color:rgb(69, 168, 69);
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+li.bad {
+    color:red;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.hidden {
+    display: none;
+}
+
+.w {
+    background-color: white;
+}
+
+ul.footer {
+    display: inline-grid;
+    grid-auto-flow: row;
+    grid-gap: 24px;
+    justify-items: center;
+    margin: auto;
+    /* list-style: none; */
+  }
+  
+  @media (min-width: 500px) {
+    ul.footer {
+      grid-auto-flow: column;
+    }
+  }
+  
+  .footer a {
+    color: #595959;
+  }
+  
+  .footer li:first-child {
+    list-style: none;
+  }
+
+  .footer-panel {
+    display: flex;
+    width: 100%;
+  }

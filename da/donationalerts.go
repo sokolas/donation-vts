@@ -16,7 +16,8 @@ import (
 )
 
 const (
-	DONE = 1
+	DONE      = 1
+	RECONNECT = 2
 
 	AUTH_BASE_URL = "https://www.donationalerts.com/oauth/authorize"
 	USER_BASE_URL = "https://www.donationalerts.com/api/v1/user/oauth"
@@ -51,8 +52,9 @@ const (
 )
 
 var Control chan int = make(chan int, 10)
+var AuthLink = ""
 
-var state string = "connecting"
+var state string = "waiting"
 
 var conn *websocket.Conn
 
@@ -70,11 +72,18 @@ var msgId int64 = 0
 var t = time.NewTicker(time.Second)
 var reconnectAt time.Time = time.Now()
 
-func UpdateConfig() {
+func InitConfig() {
 	accessToken = internal.Config.DaToken
 	listenPort = internal.Config.DaPort
 	appId = internal.Config.DaAppId
 	multiplier = internal.Config.Multiplier
+	makeAuthLink()
+}
+
+func UpdateConfig() {
+	accessToken = internal.Config.DaToken
+	multiplier = internal.Config.Multiplier
+	makeAuthLink()
 }
 
 func setState(s string) {
@@ -82,12 +91,16 @@ func setState(s string) {
 	state = s
 }
 
+func GetState() string {
+	return state
+}
+
 func nextId() int64 {
 	msgId++
 	return msgId
 }
 
-func handleRequest(w http.ResponseWriter, req *http.Request) {
+func handleOauth(w http.ResponseWriter, req *http.Request) {
 	// internal.InfoLog.Println(req.RequestURI)
 	u, _ := url.Parse(req.RequestURI)
 	if u.Path == "/" {
@@ -98,7 +111,7 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if state != "connecting" {
+	if state != "waiting" {
 		return
 	}
 
@@ -116,7 +129,7 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func Prompt() {
+func makeAuthLink() {
 	params := url.Values{}
 
 	params.Add("client_id", appId)
@@ -126,17 +139,20 @@ func Prompt() {
 
 	u, _ := url.Parse("https://www.donationalerts.com/oauth/authorize")
 	u.RawQuery = params.Encode()
+	AuthLink = u.String()
+}
 
-	os.WriteFile("Authorize Donationalerts.url", []byte(fmt.Sprintf("[InternetShortcut]\nURL=%v", u)), os.ModeAppend)
+func Prompt() {
+	os.WriteFile("Authorize Donationalerts.url", []byte(fmt.Sprintf("[InternetShortcut]\nURL=%v", AuthLink)), os.ModeAppend)
 
 	internal.WarnLog.Println("")
 	internal.WarnLog.Println("*** open 'Authorize Donationalerts' shortcut to connect the app")
 	internal.WarnLog.Println("")
-	internal.WarnLog.Printf("if it doesn't work, copy and paste this URL into your browser: %v", u)
+	internal.WarnLog.Printf("if it doesn't work, copy and paste this URL into your browser: %v", AuthLink)
 }
 
 func StartServer() {
-	http.HandleFunc("/", handleRequest)
+	http.HandleFunc("/", handleOauth)
 	http.ListenAndServe(fmt.Sprintf(":%v", listenPort), nil)
 }
 
@@ -146,7 +162,7 @@ func GetUser() {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		internal.ErrLog.Printf("Error getting user info from donationalerts: %v", err)
-		setState("connecting")
+		setState("waiting")
 		return
 	}
 	defer resp.Body.Close()
@@ -157,10 +173,10 @@ func GetUser() {
 		internal.Config.DaToken = ""
 		internal.WriteConfig()
 		Prompt()
-		setState("connecting")
+		setState("waiting")
 	} else if code != 200 {
 		internal.ErrLog.Printf("Error getting user info from donationalerts: %v %v", code, http.StatusText(code))
-		setState("connecting")
+		setState("waiting")
 	} else {
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
@@ -209,7 +225,7 @@ func subscribe() {
 		internal.WriteConfig()
 		Prompt()
 		disconnectWs()
-		setState("connecting")
+		setState("waiting")
 	} else if code != 200 {
 		internal.ErrLog.Printf("Error subscribing to donationalerts channel: %v %v", code, http.StatusText(code))
 		disconnectWs()
@@ -241,6 +257,7 @@ func subscribe() {
 }
 
 func connectWs() {
+	setState("connecting")
 	d := websocket.Dialer{
 		Proxy:            http.ProxyFromEnvironment,
 		HandshakeTimeout: 5 * time.Second,
@@ -249,6 +266,11 @@ func connectWs() {
 	if err != nil {
 		internal.ErrLog.Printf("error connecting to websocket: %v", err)
 		reconnectAt = time.Now().Add(15 * time.Second)
+		if accessToken == "" {
+			setState("waiting")
+		} else {
+			setState("access_token_set")
+		}
 		return
 	}
 	conn = c
@@ -399,6 +421,19 @@ func Run(done chan<- int) {
 					conn.Close()
 				}
 				return
+			} else if c == RECONNECT {
+				UpdateConfig()
+				reconnectAt = time.Now().Add(2 * time.Second)
+				if state != "connecting" {
+					if accessToken == "" {
+						setState("waiting")
+					} else {
+						setState("access_token_set")
+					}
+					if conn != nil && readyToRead() {
+						conn.Close()
+					}
+				}
 			}
 		}
 	}

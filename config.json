@@ -5,11 +5,12 @@
 	"vtsToken": "",
 	"customParam": "DonationCustomParam",
 	"paramDescription": "",
-	"stayTime": 20,
+	"stayTime": 30,
 	"decayTime": 5,
-	"multiplier": 1,
+	"multiplier": 2,
 	"addParam": true,
 	"daToken": "",
 	"daPort": 9696,
-	"daAppId": "10695"
+	"daAppId": "10695",
+	"autoOpenUi": true
 }

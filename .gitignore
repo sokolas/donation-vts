@@ -1,5 +1,8 @@
 log.txt
 .vscode
 donation-vts
+build32
+build64
 *.exe
 *.zip
+*.syso

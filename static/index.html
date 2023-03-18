@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>donation-vts</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" type="image/png" href="bug-256.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+        integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="container">
+    <!-- <header class="logo"> -->
+
+    <!-- </header> -->
+
+    <div class="box">
+        <div class="card">
+            <form>
+                <div class="dropdown-container">
+                    <header class="clearfix">
+                        <h1>Vtube Studio</h1>
+                        <figure class="expand"><i class="fa fa-close"></i></figure>
+                    </header>
+                    <article>
+                        <div class="article-inner">
+                            <fieldset>
+                                <!-- <legend id="vtsParamPanel">Vtube Studio - </legend> -->
+                                <label for="vtsAddr">Address</label>
+                                <input type="text" placeholder="ws://127.0.0.1:8001" id="vtsAddr" name="vtsAddr">
+                                <label for="vtsToken">Token (set automatically)</label>
+                                <input type="password" placeholder="(set automatically)" id="vtsToken" name="vtsToken">
+                                <label for="customParam">Parameter name</label>
+                                <input type="text" placeholder="DonationCustomParam" id="customParam" id="customParam">
+                                <label for="paramDescription">Description</label>
+                                <input type="text" placeholder="" id="paramDescription" name="paramDescription">
+                                <label for="stayTime">Stay time</label>
+                                <input type="text" placeholder="20" id="stayTime" name="stayTime">
+                                <label for="decayTime">Decay time</label>
+                                <input type="text" placeholder="5" id="decayTime" name="decayTime">
+                                <label for="multiplier">Multiplier</label>
+                                <input type="text" placeholder="1" id="multiplier" name="multiplier">
+                                <span><input type="checkbox" id="addParam" name="addParam" value="addParam"><label for="addParam">Add param value</label></span>
+                                <span><input type="checkbox" id="logVtsMessages" name="logVtsMessages" value="logVtsMessages"><label for="logVtsMessages">Log messages</label></span>
+                            </fieldset>
+                        </div>
+                    </article>
+                </div>
+                <div class="dropdown-container">
+                    <header class="clearfix">
+                        <h1>DonationAlerts</h1>
+                        <figure class="expand"><i class="fa fa-close"></i></figure>
+                    </header>
+                    <article>
+                        <div class="article-inner">
+                            <fieldset>
+                                <!-- <legend id="daParamPanel">Donationalerts + </legend> -->
+                                <label for="daToken">Token (set automatically)</label>
+                                <input type="password" placeholder="(set automatically)" id="daToken" name="daToken">
+                                <div class="hidden w">Don't change these parameters unless you understand what you're
+                                    doing!
+                                    See <a href="https://github.com/sokolas/donation-vts/blob/master/README.md"
+                                        target="_blank">readme (RU)</a>/<a
+                                        href="https://github.com/sokolas/donation-vts/blob/master/README-EN.md"
+                                        target="_blank">readme (EN)</a></div>
+                                <label for="daPort" class="hidden">Port for auth/ui</label>
+                                <input type="text" class="hidden " placeholder="9696" id="daPort" id="daPort">
+                                <label for="daAppId" class="hidden">App ID</label>
+                                <input type="text" class="hidden" placeholder="" id="daAppId" name="daAppId">
+                                <span><input type="checkbox" id="logDaMessages" name="logDaMessages" value="logDaMessages"><label for="logDaMessages">Log messages</label></span>
+                            </fieldset>
+                        </div>
+                    </article>
+                </div>
+                <div class="dropdown-container">
+                    <header class="clearfix">
+                        <h1>Other</h1>
+                        <figure class="expand"><i class="fa fa-close"></i></figure>
+                    </header>
+                    <article>
+                        <div class="article-inner">
+                            <fieldset>
+                                <span><input type="checkbox" id="autoOpenUi" name="autoOpenUi" value="autoOpenUi"><label
+                                        for="autoOpenUi">Show UI on startup</label></span>
+                                        <button id="tokensReset" type="button"><i class="fa-solid fa-triangle-exclamation"></i> Reset tokens</button>
+                                    </fieldset>
+                        </div>
+                    </article>
+                </div>
+
+                <button type="submit"><i class="fa-solid fa-pencil"></i> Save</button>
+                <button id="formReset" type="button"><i class="fa-solid fa-rotate-right"></i> Reload</button>
+            </form>
+        </div>
+        
+        <div class="state" id="vtsStatus">
+            <h2>Vtube Studio status</h2>
+
+            <ul class="status">
+                <li id="vts_finished">Closed</li>
+                <li id="vts_waiting">Waiting for reconnect</li>
+                <li id="vts_connecting">Connecting</li>
+                <li id="vts_token_set">Access token ready</li>
+                <li id="vts_token_requested">Waiting for auth</li>
+                <li id="vts_authenticated">Authenticated</li>
+                <li id="vts_waiting_set_param">Setting custom parameter</li>
+                <li id="vts_param_set">Ready</li>
+            </ul>
+        </div>
+
+        <div class="state" id="daStatus">
+            <h2>Donationalerts status</h2>
+
+            <ul class="status">
+                <li id="da_finished">Closed</li>
+                <li id="da_waiting">Waiting for access <span class="link"><a class="hidden" id="authLink" href="#" target="_blank">grant</a></span></li>
+                <li id="da_access_token_set">Getting user info</li>
+                <li id="da_user_set">Waiting to reconnect</li>
+                <li id="da_connecting">Connecting 1</li>
+                <li id="da_ws_connected">Waiting for token 1</li>
+                <li id="da_waiting_client">Waiting for token 2</li>
+                <li id="da_client_set">Subscribing 1</li>
+                <li id="da_subscribed">Subscribing 2</li>
+                <li id="da_waiting_channel_connect">Connecting 2</li>
+                <li id="da_channel_connected">Ready</li>
+            </ul>
+        </div>
+
+    </div>
+    <div class="footer-panel">
+        <ul class="footer">
+            <li>2023, Sokolas</li>
+            <li><a href="https://github.com/sokolas/donation-vts" target="_blank">Github</a></li>
+            <li>
+                Help: <a class="" href="https://github.com/sokolas/donation-vts/blob/master/README.md" target="_blank">RU</a> | <a class="" href="https://github.com/sokolas/donation-vts/blob/master/README-EN.md" target="_blank">EN</a>
+            </li>
+    </ul>
+    </div>
+
+    <script type="text/javascript" src="app.js"></script>
+</body>
+
+</html>
