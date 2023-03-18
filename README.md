@@ -1,5 +1,7 @@
 # Скачать
-Архив с последней версией: https://github.com/sokolas/donation-vts/releases/download/v1.0.6/donation-vts.zip
+Архивы с последней версией:
+https://github.com/sokolas/donation-vts/releases/download/v1.0.6/donation-vts.32-bit.zip (32-битная версия)
+https://github.com/sokolas/donation-vts/releases/download/v1.0.6/donation-vts.64-bit.zip (64-битная версия)
 
 # Использование
 
