@@ -1,5 +1,10 @@
 # Installation
-Download `donation-vts(32-bit).zip` or `donation-vts(64-bit).zip`, unpack, modify `config.json` according to README and run exe
+Download `donation-vts(32-bit).zip` or `donation-vts(64-bit).zip`, unpack, and run exe
+
+# v1.0.6
+* added browser UI
+* updated readme
+* added some windows resources
 
 # v1.0.5
 * BSD license
